@@ -1,5 +1,8 @@
 package com.example.Pranay;
 
+import com.example.Pranay.entity.User;
+import com.example.Pranay.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,10 +14,13 @@ import java.util.Map;
 // it handles incomming http requests and sends the response
 // what you see in response is ultimately what is returned from the controller
 // @RequestMapping gives the path for the whole controller
-@RequestMapping("/user")
+
+
 public class Controller {
 
     // path inside the coontroller
+    @Autowired
+    UserService userService;
 
     @GetMapping("")
     public String ping(){
@@ -53,5 +59,6 @@ public class Controller {
                 "  </body>\n" +
                 "</html>\n" ;
     }
+
 }
 

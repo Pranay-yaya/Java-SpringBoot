@@ -1,4 +1,4 @@
-package com.example.Pranay;
+package com.example.Pranay.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +24,9 @@ public class User {
 
     @Column(nullable = false , unique = true)
     private String email;
+    @OneToOne
+    UserInfo userInfo;
+
 
 
 }
