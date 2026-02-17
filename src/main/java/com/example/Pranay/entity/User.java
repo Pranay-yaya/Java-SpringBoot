@@ -5,13 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id ;
@@ -24,8 +25,22 @@ public class User {
 
     @Column(nullable = false , unique = true)
     private String email;
-    @OneToOne
+
+    @OneToOne(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     UserInfo userInfo;
+    @Enumerated(EnumType.STRING)
+    private VerificationStatus   verificationStatus;
+
+    private String verificationToken;
+
+    private LocalDateTime tokenExpiry;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;   // ROLE_USER, ROLE_ADMIN
+
 
 
 

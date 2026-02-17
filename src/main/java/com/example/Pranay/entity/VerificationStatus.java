@@ -1,6 +1,6 @@
 package com.example.Pranay.entity;
 
-public enum VarificationStatus {
+public enum VerificationStatus {
     VERIFIED,
     UNVERIFIED,
     ONGOING

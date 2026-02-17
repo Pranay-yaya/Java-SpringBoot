@@ -1,8 +1,6 @@
 package com.example.Pranay.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class UserInfo {
     @Id
-    long ID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long ID;
     private String name;
     private String profilePic;
     private String phone;
@@ -22,5 +21,7 @@ public class UserInfo {
     private VarificationStatus verificationStatus;
 
     @OneToOne
+    @JoinColumn(name="user_id",unique = true)
+
     User user;
 }

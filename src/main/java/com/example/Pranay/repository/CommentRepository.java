@@ -1,0 +1,11 @@
+package com.example.Pranay.repository;
+
+import com.example.Pranay.entity.Comment;
+import com.example.Pranay.entity.Post;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface CommentRepository extends JpaRepository<Comment,Long> {
+    public List<Comment> findAllByUserIdOrderByCreatedAtdec(Long userId);
+}
