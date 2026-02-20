@@ -4,14 +4,19 @@ package com.example.Pranay.service;
 import com.example.Pranay.dto.UserDto;
 import com.example.Pranay.dto.UserResponseDto;
 import com.example.Pranay.entity.UserInfo;
+import com.example.Pranay.entity.VerificationStatus;
+import com.example.Pranay.repository.TokenRepository;
 import com.example.Pranay.repository.UserInfoRepository;
 import com.example.Pranay.repository.UserRepository;
 import com.example.Pranay.entity.User;
+import com.example.Pranay.entity.Token;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -20,6 +25,12 @@ public class UserService {
 
     @Autowired
     private UserInfoRepository userInfoRepository;
+    @Autowired
+    private TokenRepository tokenRepository;
+
+    @Autowired
+    private EmailService emailService;
+
     private User toEntity(UserDto userDto){
         User user = new User();
         UserInfo userInfo = new UserInfo();
@@ -59,13 +70,24 @@ public class UserService {
 
         return userDto;
     }
-    public User createUser(UserDto userDto) {
 
+    public UserResponseDto createUser(UserDto userDto)throws MessagingException {
 
         User user   = toEntity(userDto) ;
+        user.getUserInfo().setVerificationStatus(VerificationStatus.ONGOING);
+
+        Token token =new Token();
+        token.setUser(user);
+        UUID uuid =UUID.randomUUID();
+        token.setToken(uuid.toString());
+
+        sendVerificationEmail(user,uuid.toString());
+
         userRepository.save(user);
         userInfoRepository.save(user.getUserInfo());
-        return user;
+        tokenRepository.save(token);
+
+        return toResponseDto(user);
 
     }
 
@@ -116,5 +138,32 @@ public class UserService {
         User  user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.delete(user);
         return toResponseDto(user);
+    }
+    public void sendVerificationEmail(User user , String token)
+            throws MessagingException {
+
+        String verificationUrl =
+                "http://localhost:8080/api/auth/verify?token=" + token;
+
+        String htmlContent = """
+            <html>
+                <body>
+                    <h2>Email Verification</h2>
+                    <p>Please click the button below to verify your account:</p>
+                    <a href="%s"
+                       style="padding:10px 20px;
+                              background-color:#4CAF50;
+                              color:white;
+                              text-decoration:none;
+                              border-radius:5px;">
+                       Verify Account
+                    </a>
+                </body>
+            </html>
+            """.formatted(verificationUrl);
+
+        String email = user.getEmail() ;
+
+        emailService.sendHtmlMail(email, "Verify Your Account", htmlContent);
     }
 }

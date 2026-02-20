@@ -12,16 +12,21 @@ import lombok.NoArgsConstructor;
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long ID;
+    private long Id;
+
     private String name;
     private String profilePic;
     private String phone;
     private String location;
 
-    private VarificationStatus verificationStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;   // ROLE_USER, ROLE_ADMIN
 
     @OneToOne
     @JoinColumn(name="user_id",unique = true)
-
     User user;
+
+    public void setVerificationStatus(VerificationStatus verificationStatus) {
+    }
 }

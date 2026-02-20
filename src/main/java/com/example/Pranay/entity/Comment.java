@@ -14,23 +14,25 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private long id;
+    @Column(nullable = false)
+    private String comment;
 
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    User user;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="user_id",nullable = false)
+    private User user;
 
-    @ManyToOne
-    @JoinColumn(name="post_id")
-    Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="post_id",nullable = false)
+    private Post post;
 
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
     @PrePersist
     public void prePersist(){
         this.createdAt=LocalDateTime.now();
     }
 
 
-
-
+    public void setComment(String content) {
+    }
 }

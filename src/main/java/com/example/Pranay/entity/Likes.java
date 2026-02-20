@@ -8,7 +8,12 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Table(
+        name="likes",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames={"user_id","post_id"})
+        }
+)
 public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

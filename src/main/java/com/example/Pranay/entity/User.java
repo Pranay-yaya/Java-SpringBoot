@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -31,15 +33,33 @@ public class User {
             orphanRemoval = true
     )
     UserInfo userInfo;
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
+
+    @OneToMany(cascade = CascadeType.ALL)
+    List<Likes> likes  = new ArrayList<>() ;
+
+    public void addPost(Post post) {
+        posts.add(post);
+        post.setUser(this);
+    }
+
+    public void removePost(Post post) {
+        posts.remove(post);
+        post.setUser(null);
+    }
+
     @Enumerated(EnumType.STRING)
-    private VerificationStatus   verificationStatus;
+    private VerificationStatus verificationStatus;
 
     private String verificationToken;
 
     private LocalDateTime tokenExpiry;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;   // ROLE_USER, ROLE_ADMIN
+
 
 
 

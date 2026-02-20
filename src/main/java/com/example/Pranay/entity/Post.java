@@ -29,10 +29,6 @@ public class Post {
     @OneToMany(cascade = CascadeType.ALL)
     List<Likes> likes  = new ArrayList<>() ;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    List<Comment> comments=new ArrayList<>();
-
-
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
