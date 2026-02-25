@@ -6,6 +6,7 @@ import com.example.Pranay.service.UserService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,15 +26,15 @@ public class UserController {
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserDto userDto){
         try{
             return ResponseEntity.ok(userService.createUser(userDto));
-    }catch(MessagingException e)
+        } catch (MessagingException e) {
 
-    {
-        return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().build();
+        }
     }
-    }
+
     @GetMapping("/{id}")
     public UserResponseDto getUser(@PathVariable long id){
-        return userService.getUser(id) ;
+        return userService.getuser(id) ;
     }
 
     @PutMapping("")
@@ -47,5 +48,12 @@ public class UserController {
     }
 
 
+    @GetMapping("/visible")
+    public ResponseEntity<String> toggleVisible(Authentication authentication){
+        String username = authentication.getName();
+        userService.toggleVisible(username);
 
+        return ResponseEntity.ok().build();
+
+    }
 }

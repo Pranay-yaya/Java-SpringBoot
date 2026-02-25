@@ -30,9 +30,10 @@ public class User {
 
     @OneToOne(mappedBy = "user",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    UserInfo userInfo;
+            orphanRemoval = true)
+    UserInfo userInfo  ;
+
+
     @OneToMany(mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
@@ -41,6 +42,9 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL)
     List<Likes> likes  = new ArrayList<>() ;
+
+
+    boolean visible  ;
 
     public void addPost(Post post) {
         posts.add(post);
@@ -52,12 +56,6 @@ public class User {
         post.setUser(null);
     }
 
-    @Enumerated(EnumType.STRING)
-    private VerificationStatus verificationStatus;
-
-    private String verificationToken;
-
-    private LocalDateTime tokenExpiry;
 
 
 

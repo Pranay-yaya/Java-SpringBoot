@@ -1,5 +1,6 @@
 package com.example.Pranay.controller;
 
+import com.example.Pranay.Authentication.JwtUtil;
 import com.example.Pranay.entity.Comment;
 import com.example.Pranay.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -17,38 +18,49 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final JwtUtil jwtUtil;
 
-    // ✅ Add Comment
+
     @PostMapping
     public ResponseEntity<Comment> addComment(
             @RequestParam Long postId,
-            @RequestParam String content,
+            @RequestBody String content,
             Authentication authentication) {
 
         String username = authentication.getName();
+
         Comment comment = commentService.addComment(username, postId, content);
 
         return ResponseEntity.ok(comment);
     }
 
-    // ✅ Update Comment
+
     @PutMapping("/{commentId}")
     public ResponseEntity<Comment> updateComment(
             @PathVariable Long commentId,
-            @RequestParam String content,
-            Authentication authentication) {
+            @RequestBody String content,
+            @RequestHeader("Authorization") String token) {
 
-        String username = authentication.getName();
+        token = token.substring(7);
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String username = jwtUtil.extractUsername(token);
+
         Comment updated = commentService.updateComment(commentId, username, content);
 
         return ResponseEntity.ok(updated);
     }
 
-    // ✅ Delete Comment (FIXED → DELETE mapping)
+
     @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(
             @PathVariable Long commentId,
             Authentication authentication) {
+
+
 
         String username = authentication.getName();
         commentService.deleteComment(commentId, username);
@@ -56,16 +68,18 @@ public class CommentController {
         return ResponseEntity.ok("Comment deleted successfully");
     }
 
-    // ✅ Get all comments of a post
+
     @GetMapping("/post/{postId}")
-    public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable Long postId) {
+    public ResponseEntity<List<Comment>> getCommentsByPost(
+            @PathVariable Long postId) {
 
         return ResponseEntity.ok(commentService.getCommentsByPost(postId));
     }
 
-    // ✅ Count comments of a post
+
     @GetMapping("/count/{postId}")
-    public ResponseEntity<Long> countComments(@PathVariable Long postId) {
+    public ResponseEntity<Long> countComments(
+            @PathVariable Long postId) {
 
         return ResponseEntity.ok(commentService.countComments(postId));
     }

@@ -3,13 +3,10 @@ package com.example.Pranay.service;
 
 import com.example.Pranay.dto.UserDto;
 import com.example.Pranay.dto.UserResponseDto;
-import com.example.Pranay.entity.UserInfo;
-import com.example.Pranay.entity.VerificationStatus;
+import com.example.Pranay.entity.*;
 import com.example.Pranay.repository.TokenRepository;
 import com.example.Pranay.repository.UserInfoRepository;
 import com.example.Pranay.repository.UserRepository;
-import com.example.Pranay.entity.User;
-import com.example.Pranay.entity.Token;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,15 +18,17 @@ import java.util.UUID;
 @Service
 public class UserService {
     @Autowired
-    UserRepository userRepository;
-
+    private UserRepository userRepository;
     @Autowired
     private UserInfoRepository userInfoRepository;
+
     @Autowired
     private TokenRepository tokenRepository;
 
     @Autowired
     private EmailService emailService;
+
+
 
     private User toEntity(UserDto userDto){
         User user = new User();
@@ -71,17 +70,22 @@ public class UserService {
         return userDto;
     }
 
-    public UserResponseDto createUser(UserDto userDto)throws MessagingException {
+    public UserResponseDto createUser(UserDto userDto) throws MessagingException {
+
 
         User user   = toEntity(userDto) ;
-        user.getUserInfo().setVerificationStatus(VerificationStatus.ONGOING);
+        user.setVisible(false);
 
-        Token token =new Token();
+        user.getUserInfo().setRole(Role.ROLE_UNVERIFIED);
+
+        Token token = new Token();
         token.setUser(user);
-        UUID uuid =UUID.randomUUID();
+        UUID uuid = UUID.randomUUID();
         token.setToken(uuid.toString());
 
-        sendVerificationEmail(user,uuid.toString());
+
+        sendVerificationEmail(user, uuid.toString());
+
 
         userRepository.save(user);
         userInfoRepository.save(user.getUserInfo());
@@ -91,20 +95,22 @@ public class UserService {
 
     }
 
-    public List<UserResponseDto> getUsers(){
-        List<User>users=userRepository.findAll();
-        List<UserResponseDto>response=new ArrayList<>();
-        for(User user:users){
+    public List<UserResponseDto> getUsers() {
+
+        List<User> users  = userRepository.findAll();
+        List<UserResponseDto> response = new ArrayList<>();
+        for (User user : users) {
             response.add(toResponseDto(user));
         }
         return response;
     }
 
-    public UserResponseDto getUser(long id){
+    public UserResponseDto getuser(long id){
         User  user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         return toResponseDto(user);
 
     }
+
 
     public UserResponseDto updateUserPartial(UserDto userDto) {
 
@@ -112,33 +118,52 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         UserInfo userInfo = user.getUserInfo();
+
         if (userDto.getUsername() != null) {
             user.setUsername(userDto.getUsername());
         }
+
         if (userDto.getEmail() != null) {
             user.setEmail(userDto.getEmail());
         }
+
         if (userDto.getPassword() != null) {
             user.setPassword(userDto.getPassword());
         }
+
         if (userDto.getName() != null) {
             userInfo.setName(userDto.getName());
         }
+
         if (userDto.getPhone() != null) {
             userInfo.setPhone(userDto.getPhone());
         }
+
         if (userDto.getProfilePic() != null) {
             userInfo.setProfilePic(userDto.getProfilePic());
         }
+
         userRepository.save(user);
         userInfoRepository.save(userInfo);
+
         return toResponseDto(user);
     }
+
+
+
     public UserResponseDto deleteUser(long id) {
         User  user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.delete(user);
         return toResponseDto(user);
     }
+
+
+    public void toggleVisible(String username){
+        User user = userRepository.findByUsername(username).get() ;
+        user.setVisible(!user.isVisible());
+    }
+
+
     public void sendVerificationEmail(User user , String token)
             throws MessagingException {
 
@@ -166,4 +191,9 @@ public class UserService {
 
         emailService.sendHtmlMail(email, "Verify Your Account", htmlContent);
     }
+
+
+
+
+
 }

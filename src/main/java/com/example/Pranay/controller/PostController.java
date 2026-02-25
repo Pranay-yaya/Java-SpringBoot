@@ -77,5 +77,4 @@ public class PostController {
         return ResponseEntity.ok(postService.delete(id, username));
     }
 
-
 }

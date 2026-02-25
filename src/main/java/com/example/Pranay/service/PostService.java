@@ -1,6 +1,6 @@
 package com.example.Pranay.service;
 
-import com.example.Pranay.dto.PostDto;
+import com.example.Pranay.dto.PostResponseDto;
 import com.example.Pranay.dto.PostResponseDto;
 import com.example.Pranay.entity.Post;
 import com.example.Pranay.entity.User;
@@ -27,6 +27,9 @@ public class PostService {
         dto.setContent(post.getContent());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setMediaUrl(post.getMediaUrl());
+        dto.setLikeCount(post.getLikes().size());
+        dto.setCommentsCount(post.getComments().size());
+
         return dto;
     }
 
@@ -49,7 +52,7 @@ public class PostService {
 
     public PostResponseDto create(String content, MultipartFile file, String username) {
 
-        User user = userRepository.findByUsername(username).get(0);
+        User user = userRepository.findByUsername(username).get();
 
         Post post = new Post();
         post.setContent(content);

@@ -22,7 +22,7 @@ public class LikeService {
 
     @Transactional
     public String toggleLike(String username, Long postId) {
-        User user =userRepository.findByUsername(username).get(0);
+        User user =userRepository.findByUsername(username).get();
         Post post=postRepository.findById(postId)
                 .orElseThrow(()->new RuntimeException("Post not found"));
 
@@ -46,7 +46,7 @@ public class LikeService {
     }
 
     public boolean isLiked(String username, Long postId) {
-        User user=userRepository.findByUsername(username).get(0);
+        User user=userRepository.findByUsername(username).get();
         Post post=postRepository.findById(postId)
                 .orElseThrow(()->new RuntimeException("Post not found"));
         return likeRepository.existsByUserIdAndPostId(user.getId(), postId);

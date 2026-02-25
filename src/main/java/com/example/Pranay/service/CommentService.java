@@ -24,7 +24,7 @@ public class CommentService {
 
     public Comment addComment(String username, Long postId, String content) {
 
-        User user = userRepository.findByUsername(username).get(0);
+        User user = userRepository.findByUsername(username).get();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
