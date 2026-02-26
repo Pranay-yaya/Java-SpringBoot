@@ -1,7 +1,7 @@
 package com.example.Pranay.entity;
 
 public enum FollowStatus {
-    FOLLOWING,
+    ACCEPTED,
     PENDING,
     REJECTED,
 }

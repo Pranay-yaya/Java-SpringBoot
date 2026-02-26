@@ -14,6 +14,9 @@ public class UserInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
 
+
+    private boolean isPrivate = false;
+
     private String name;
     private String profilePic;
     private String phone;
